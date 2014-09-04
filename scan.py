@@ -8,6 +8,7 @@ import pdb
 import shelve
 
 DATA = None
+VERBOSE = False
 
 def random_hex(length=6):
     CHARS = '0123456789ABCDEF'
@@ -37,12 +38,13 @@ def ensure_structure(d):
         DATA['index'] = dict()
     
 def main():
-    global DATA
+    global DATA, VERBOSE
 
     import argparse
     parser = argparse.ArgumentParser(description='Scan a network')
     parser.add_argument('--extensive', '-e', action='store_true', help='Start an extensive nmap scan.')
     parser.add_argument('--shelvefile', '-s', help='File to store the run in.')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Make the tool more verbose.')
     parser.add_argument('networks', metavar='NETWORK', nargs='+', help='A network to be scanned.')
     args = parser.parse_args()
 
@@ -51,6 +53,8 @@ def main():
         networks = [ipaddress.ip_network(network) for network in args.networks]
     except:
         parser.error('Did not understand the network(s) provided.')
+
+    if args.verbose: VERBOSE = True
 
     # Check the --shelvefile parameter
     if args.shelvefile:
@@ -67,7 +71,7 @@ def main():
         nm.scan(hosts=str(network), arguments='-A -v -v')
         hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
         for host, status in hosts_list:
-            print('{0}:{1}'.format(host, status))
+            if VERBOSE: print('{0}:{1}'.format(host, status))
         #pdb.set_trace()
         if DATA:
             log_scan(nm, DATA)
