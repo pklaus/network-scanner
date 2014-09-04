@@ -12,6 +12,7 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(description='Analyze a scan file')
+    parser.add_argument('--details', '-d', action='store_true', help='Show more details in output.')
     parser.add_argument('--shelvefile', '-s', help='File to store the run in.', required=True)
     args = parser.parse_args()
 
@@ -31,9 +32,13 @@ def main():
     for hid in index:
         ientry = index[hid]
         results = DATA[hid]
-        num_up = len([host for host in results['hosts'] if results['hosts'][host]['status']['state']=='up'])
+        hosts_up = [host for host in results['hosts'] if results['hosts'][host]['status']['state']=='up']
         num_all = len(ientry['all_hosts'])
-        print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], num_up, num_all))
+        print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], len(hosts_up), num_all))
+        if args.details:
+            for host in hosts_up:
+                ports = list(results['hosts'][host]['tcp'].keys())
+                print(" |-> {} (TCP ports: {})".format(host, ', '.join([str(port) for port in ports])))
 
     #pdb.set_trace()
 
