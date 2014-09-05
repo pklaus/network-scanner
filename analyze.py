@@ -42,7 +42,7 @@ def main():
                     ports = list(results['hosts'][host]['tcp'].keys())
                 except KeyError:
                     ports = []
-                print("  |-> {} | Hostname: {} | TCP ports: {!s}".format(host, hostname, ports))
+                print("  |-> {:16s} {:35s} | TCP ports: {!s}".format(host, hostname, ports))
 
     #pdb.set_trace()
 
