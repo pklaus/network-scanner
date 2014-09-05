@@ -1,7 +1,11 @@
 # Network Scanner
 
-This network scanner written in Python uses nmap to scan your network.
-It stores the results in a structured way in a shelve file.
+There is a very good tool to scan networks: it's called nmap.
+This software uses nmap and the Python bindings python-nmap
+to help you storing and analyzing results in a structured way
+in a *shelve file*.
+
+Requires Python3.3+ and python-nmap.
 
 ### Resources
 
