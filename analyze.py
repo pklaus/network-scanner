@@ -37,11 +37,12 @@ def main():
         print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], len(hosts_up), num_all))
         if args.details:
             for host in hosts_up:
+                hostname = results['hosts'][host]['hostname']
                 try:
                     ports = list(results['hosts'][host]['tcp'].keys())
                 except KeyError:
                     ports = []
-                print(" |-> {} (TCP ports: {})".format(host, ', '.join([str(port) for port in ports])))
+                print("  |-> {} | Hostname: {} | TCP ports: {}".format(host, hostname, ', '.join([str(port) for port in ports])))
 
     #pdb.set_trace()
 
