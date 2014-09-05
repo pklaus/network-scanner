@@ -66,7 +66,7 @@ def main():
 
     # Start scanning
     nm = nmap.PortScanner()
-    arguments = '-n -sP -PE -PA21,23,80,3389'
+    arguments = '-sn -PE -PA21,23,80,3389'
     if args.extensive:
         arguments = '-A -v -v'
     for network in networks:
