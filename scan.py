@@ -70,8 +70,10 @@ def main():
         #nm.scan(hosts=network, arguments='-n -sP -PE -PA21,23,80,3389')
         nm.scan(hosts=str(network), arguments='-A -v -v')
         hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
-        for host, status in hosts_list:
-            if VERBOSE: print('{0}:{1}'.format(host, status))
+        if VERBOSE:
+            hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
+            for host, status in hosts_list:
+                print('{0}:{1}'.format(host, status))
         #pdb.set_trace()
         if DATA:
             log_scan(nm, DATA)
