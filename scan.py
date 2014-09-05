@@ -68,7 +68,7 @@ def main():
     nm = nmap.PortScanner()
     arguments = '-sn -PE -PA21,23,80,3389'
     if args.extensive:
-        arguments = '-A -v -v'
+        arguments = '-A -v -v -T aggressive'
     for network in networks:
         nm.scan(hosts=str(network), arguments=arguments)
         hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
