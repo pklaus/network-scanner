@@ -50,7 +50,7 @@ def main():
 
     # Check 'networks' arguments
     try:
-        networks = [ipaddress.ip_network(network) for network in args.networks]
+        networks = [ipaddress.ip_network(network, strict=False) for network in args.networks]
     except:
         parser.error('Did not understand the network(s) provided.')
 
