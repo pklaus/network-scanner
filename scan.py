@@ -67,8 +67,10 @@ def main():
     # Start scanning
     nm = nmap.PortScanner()
     for network in networks:
-        #nm.scan(hosts=network, arguments='-n -sP -PE -PA21,23,80,3389')
-        nm.scan(hosts=str(network), arguments='-A -v -v')
+        if args.extensive:
+            nm.scan(hosts=str(network), arguments='-A -v -v')
+        else:
+            nm.scan(hosts=str(network), arguments='-n -sP -PE -PA21,23,80,3389')
         hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
         if VERBOSE:
             hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
