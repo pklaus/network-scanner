@@ -36,6 +36,11 @@ def main():
         num_all = len(ientry['all_hosts'])
         print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], len(hosts_up), num_all))
         if args.details:
+            # Sort the hosts by their IP
+            hosts_up = [(ipaddress.ip_address(host), host) for host in hosts_up]
+            hosts_up.sort()
+            hosts_up = [host[1] for host in hosts_up]
+            # And print detailed output for each of them
             for host in hosts_up:
                 hostname = results['hosts'][host]['hostname']
                 try:
@@ -44,7 +49,7 @@ def main():
                     ports = []
                 print("  |-> {:16s} {:35s} | TCP ports: {!s}".format(host, hostname, ports))
 
-    #pdb.set_trace()
+    pdb.set_trace()
 
     if DATA: DATA.close()
 
