@@ -71,7 +71,6 @@ def main():
         arguments = '-A -v -v -T aggressive'
     for network in networks:
         nm.scan(hosts=str(network), arguments=arguments)
-        hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
         if VERBOSE:
             hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
             for host, status in hosts_list:
