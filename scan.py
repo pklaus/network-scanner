@@ -69,15 +69,15 @@ def main():
     arguments = '-sn -PE -PA21,23,80,3389'
     if args.extensive:
         arguments = '-A -v -v -T aggressive'
-    for network in networks:
-        nm.scan(hosts=str(network), arguments=arguments)
-        if VERBOSE:
-            hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
-            for host, status in hosts_list:
-                print('{0}:{1}'.format(host, status))
-        #pdb.set_trace()
-        if DATA:
-            log_scan(nm, DATA)
+    nm.scan(hosts=" ".join([str(network) for network in networks]), arguments=arguments)
+    hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
+    if VERBOSE:
+        hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
+        for host, status in hosts_list:
+            print('{0}:{1}'.format(host, status))
+    #pdb.set_trace()
+    if DATA:
+        log_scan(nm, DATA)
 
     if DATA: DATA.close()
 
