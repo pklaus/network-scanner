@@ -12,8 +12,8 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(description='Analyze a scan file')
-    parser.add_argument('--details', '-d', action='store_true', help='Show more details in output.')
-    parser.add_argument('--shelvefile', '-s', help='File to store the run in.', required=True)
+    parser.add_argument('--detailed', '-d', action='store_true', help='Show more details in output.')
+    parser.add_argument('--shelvefile', '-s', help='File where the scans are storeed in.', required=True)
     args = parser.parse_args()
 
     # Check the --shelvefile parameter
@@ -23,7 +23,7 @@ def main():
         except:
             parser.error('Could not open the shelvefile!.')
 
-    # Start scanning
+    # Start interpretation
     try:
         index = DATA['index']
     except KeyError:
@@ -35,7 +35,7 @@ def main():
         hosts_up = [host for host in results['hosts'] if results['hosts'][host]['status']['state']=='up']
         num_all = len(ientry['all_hosts'])
         print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], len(hosts_up), num_all))
-        if args.details:
+        if args.detailed:
             # Sort the hosts by their IP
             hosts_up = [(ipaddress.ip_address(host), host) for host in hosts_up]
             hosts_up.sort()
