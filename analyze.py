@@ -4,6 +4,7 @@ import ipaddress
 from datetime import datetime as dt
 import pdb
 import shelve
+from plugins import PLUGINS, UNAVAILABLE_PLUGINS
 
 DATA = None
 
@@ -31,25 +32,11 @@ def main():
 
     for hid in index:
         ientry = index[hid]
+        print(ientry)
         results = DATA[hid]
-        hosts_up = [host for host in results['hosts'] if results['hosts'][host]['status']['state']=='up']
-        num_all = len(ientry['all_hosts'])
-        print("{} | {} | Command: {} | {:d} of {:d} host found to be up".format(hid, ientry['utcnow'], ientry['command'], len(hosts_up), num_all))
-        if args.detailed:
-            # Sort the hosts by their IP
-            hosts_up = [(ipaddress.ip_address(host), host) for host in hosts_up]
-            hosts_up.sort()
-            hosts_up = [host[1] for host in hosts_up]
-            # And print detailed output for each of them
-            for host in hosts_up:
-                hostname = results['hosts'][host]['hostname']
-                try:
-                    ports = list(results['hosts'][host]['tcp'].keys())
-                except KeyError:
-                    ports = []
-                print("  |-> {:16s} {:35s} | TCP ports: {!s}".format(host, hostname, ports))
+        PLUGINS[ientry['plugin']].analyze(results, detailed=args.detailed)
 
-    pdb.set_trace()
+        pdb.set_trace()
 
     if DATA: DATA.close()
 

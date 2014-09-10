@@ -1,35 +1,13 @@
 #!/usr/bin/env python
 
-import nmap
 import ipaddress
-from datetime import datetime as dt
-import random
 import pdb
 import shelve
 
+from plugins import PLUGINS, UNAVAILABLE_PLUGINS
+
 DATA = None
 VERBOSE = False
-
-def random_hex(length=6):
-    CHARS = '0123456789ABCDEF'
-    return ''.join(random.sample(CHARS,length))
-
-def log_scan(nm, d):
-    hid = random_hex()
-    # Let's store the context of this run
-    index = d['index']
-    index[hid] = {
-        'utcnow': dt.utcnow().isoformat(),
-        'command': nm.command_line(),
-        'scaninfo': nm.scaninfo(),
-        'all_hosts': nm.all_hosts(),
-    }
-    d['index'] = index
-    # We pull the entries out of nm:
-    hosts = {}
-    for host in nm.all_hosts():
-        hosts[host] = nm[host]
-    d[hid] = {'hosts': hosts}
 
 def ensure_structure(d):
     try:
@@ -44,12 +22,14 @@ def main():
     parser = argparse.ArgumentParser(description='Scan a network')
     parser.add_argument('--extensive', '-e', action='store_true', help='Start an extensive nmap scan.')
     parser.add_argument('--shelvefile', '-s', help='File to store the run in.')
+    parser.add_argument('--plugin', '-p', default='nmap', help='Backend plugin and an scan type.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Make the tool more verbose.')
     parser.add_argument('networks', metavar='NETWORK', nargs='+', help='A network to be scanned.')
     args = parser.parse_args()
 
     # Check 'networks' arguments
     try:
+        # Try to interpret each argument as an IP network
         networks = [ipaddress.ip_network(network, strict=False) for network in args.networks]
     except:
         parser.error('Did not understand the network(s) provided.')
@@ -64,20 +44,28 @@ def main():
             parser.error('Could not open the shelvefile!.')
         ensure_structure(DATA)
 
-    # Start scanning
-    nm = nmap.PortScanner()
+    # Check the parameters to pre-set the nmap arguments
     arguments = '-sn -PE -PA21,23,80,3389'
     if args.extensive:
         arguments = '-A -v -v -T aggressive'
-    nm.scan(hosts=" ".join([str(network) for network in networks]), arguments=arguments)
-    hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
-    if VERBOSE:
-        hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
-        for host, status in hosts_list:
-            print('{0}:{1}'.format(host, status))
+
+    # Check the --plugin parameter
+    if args.plugin:
+        plugin_name = args.plugin.partition(':')[0]
+        plugin_arguments = args.plugin.partition(':')[2]
+        if plugin_name in UNAVAILABLE_PLUGINS:
+            parser.error("Sorry, the plugin {} is currently not available. Please install its requirements.".format(plugin_name))
+        if plugin_name not in PLUGINS:
+            parser.error("Sorry, the plugin {} does not exist.".format(plugin_name))
+        scanner = PLUGINS[plugin_name]()
+        if plugin_arguments:
+            arguments = plugin_arguments
+
+    # Start scanning
+    scanner.scan(networks=networks, arguments=arguments, verbose=VERBOSE)
     #pdb.set_trace()
     if DATA:
-        log_scan(nm, DATA)
+        scanner.log_scan(DATA)
 
     if DATA: DATA.close()
 
