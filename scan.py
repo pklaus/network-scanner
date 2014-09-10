@@ -21,6 +21,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='Scan a network')
     parser.add_argument('--extensive', '-e', action='store_true', help='Start an extensive nmap scan.')
+    parser.add_argument('--netbios', '-n', action='store_true', help='Start a netbios nmap scan.')
     parser.add_argument('--shelvefile', '-s', help='File to store the run in.')
     parser.add_argument('--plugin', '-p', default='libnmap', help='Backend plugin and an scan type.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Make the tool more verbose.')
@@ -48,6 +49,8 @@ def main():
     arguments = '-sn -PE -PA21,23,80,3389'
     if args.extensive:
         arguments = '-A -v -v -T aggressive'
+    if args.netbios:
+        arguments = '-sU -p 137,5353 --script nbstat,dns-service-discovery -T aggressive'
 
     # Check the --plugin parameter
     if args.plugin:
