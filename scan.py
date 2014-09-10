@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description='Scan a network')
     parser.add_argument('--extensive', '-e', action='store_true', help='Start an extensive nmap scan.')
     parser.add_argument('--shelvefile', '-s', help='File to store the run in.')
-    parser.add_argument('--plugin', '-p', default='nmap', help='Backend plugin and an scan type.')
+    parser.add_argument('--plugin', '-p', default='libnmap', help='Backend plugin and an scan type.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Make the tool more verbose.')
     parser.add_argument('networks', metavar='NETWORK', nargs='+', help='A network to be scanned.')
     args = parser.parse_args()
